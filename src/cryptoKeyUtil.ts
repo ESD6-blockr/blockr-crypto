@@ -6,7 +6,7 @@ import { IKeyPair } from "./types";
 
 @injectable()
 export class CryptoKeyUtil {
-    private ec: EC;
+    private readonly ec: EC;
 
     constructor() {
         this.ec = new EC("secp256k1");
