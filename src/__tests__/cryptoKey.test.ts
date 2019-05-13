@@ -3,8 +3,6 @@ import { CryptoKeyUtil } from "../cryptoKeyUtil";
 import { ObjectHasher } from "../objectHasher";
 import { getTestObject } from "./constants/objects";
 
-jest.mock("@blockr/blockr-logger");
-
 let cryptoKeyUtil: CryptoKeyUtil;
 let objectHasher: ObjectHasher;
 

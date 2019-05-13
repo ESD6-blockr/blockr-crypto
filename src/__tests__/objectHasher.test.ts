@@ -3,8 +3,6 @@ import "reflect-metadata";
 import { ObjectHasher } from "../objectHasher";
 import { getTestObject } from "./constants/objects";
 
-jest.mock("@blockr/blockr-logger");
-
 let objectHasher: ObjectHasher;
 
 beforeEach(() => {

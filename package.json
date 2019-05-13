@@ -18,7 +18,6 @@
     "url": "https://github.com/ESD6-blockr/blockr-crypto/issues"
   },
   "dependencies": {
-    "@blockr/blockr-logger": "^1.1.0-20",
     "elliptic": "^6.4.1",
     "inversify": "^5.0.1",
     "reflect-metadata": "^0.1.13"

@@ -36,7 +36,7 @@ DIContainer.bind<ObjectHasher>(ObjectHasher).toSelf().inTransientScope();
 class MainService {
     private objectHasher: ObjectHasher;
 
-    constructor(@inject(ObjectHasher) objectHasher: DataAccessLayer) {
+    constructor(@inject(ObjectHasher) objectHasher: ObjectHasher) {
         this.objectHasher = objectHasher;
     }
 }

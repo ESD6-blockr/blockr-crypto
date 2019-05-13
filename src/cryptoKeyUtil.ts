@@ -1,8 +1,8 @@
-import { logger } from "@blockr/blockr-logger";
 import { ec as EC } from "elliptic";
 import { injectable } from "inversify";
 import { KeyPairException } from "./exceptions";
 import { SignatureException } from "./exceptions/signature.exception";
+import { IKeyPair } from "./types";
 
 @injectable()
 export class CryptoKeyUtil {
@@ -14,23 +14,19 @@ export class CryptoKeyUtil {
 
     /**
      * Generate a new (EC) crypto key pair.
-     * @returns {EC.KeyPair | IKeyPair} EC key pair.
+     * @returns {IKeyPair} EC key pair.
      * @throws {KeyPairException} when the generated key pair fails to verify.
      */
-    public generateKeyPair(): EC.KeyPair {
-        logger.info("Generating key pair.");
-
+    public generateKeyPair(): IKeyPair {
         const keyPair = this.ec.genKeyPair();
 
         const validationResult = keyPair.validate();
 
         if (validationResult.result) {
-            logger.info("Generated key pair successfully.");
-
             return keyPair;
         }
 
-        throw new KeyPairException("Keypair generation failed", validationResult.reason);
+        throw new KeyPairException("Key pair generation failed", validationResult.reason);
     }
 
     /**
@@ -39,10 +35,9 @@ export class CryptoKeyUtil {
      * @param keyPair 
      * @returns {string} Hex encoded signature.
      */
-    public createSignatureWithKeyPair(hash: string, keyPair: EC.KeyPair): string {
-        logger.info("Creating signature.");
-
+    public createSignatureWithKeyPair(hash: string, keyPair: IKeyPair): string {
         const signature = keyPair.sign(hash);
+       
         return signature.toDER("hex");
     }
 
@@ -54,13 +49,9 @@ export class CryptoKeyUtil {
      * @returns {boolean} Verification result.
      */
     public verifySignature(publicKey: string, hash: string, signature: string): boolean {
-        logger.info("Verifying signature.");
-
         const key = this.ec.keyFromPublic(publicKey, "hex");
         
         if (key.verify(hash, signature)) {
-            logger.info("Verified signature successfully.");
-
             return true;
         }
         
