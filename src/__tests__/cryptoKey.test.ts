@@ -2,6 +2,7 @@ import "reflect-metadata";
 import { CryptoKeyUtil } from "../cryptoKeyUtil";
 import { ObjectHasher } from "../objectHasher";
 import { getTestObject } from "./constants/objects";
+import { IKeyPair } from "../types";
 
 let cryptoKeyUtil: CryptoKeyUtil;
 let objectHasher: ObjectHasher;
@@ -21,15 +22,12 @@ describe("Generating key pair", () => {
     });
 
     it("Should be unqiue each time", () => {
-        const keyPairs = [];
+        const keyPairs = new Array<IKeyPair>(500);
 
-        for (let i = 0; i < 100; i++) {
-            keyPairs.push(cryptoKeyUtil.generateKeyPair());
-        }
-
-        for (let i = 0; i < 99; i++) {
-            expect(keyPairs[i].getPublic()).not.toBe(keyPairs[i + 1].getPublic());
-            expect(keyPairs[i].getPrivate()).not.toBe(keyPairs[i + 1].getPrivate());
+        for (let i = 0; i < 500; i++) {
+            keyPairs[i] = (cryptoKeyUtil.generateKeyPair());
+            expect(keyPairs.find((keyPair) => keyPair.getPublic() === keyPairs[i].getPublic())).not.toBeNull();
+            expect(keyPairs.find((keyPair) => keyPair.getPrivate() === keyPairs[i].getPrivate())).not.toBeNull();
         }
     });
 });
