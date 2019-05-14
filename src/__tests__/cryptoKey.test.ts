@@ -1,8 +1,8 @@
 import "reflect-metadata";
 import { CryptoKeyUtil } from "../cryptoKeyUtil";
 import { ObjectHasher } from "../objectHasher";
-import { getTestObject } from "./constants/objects";
 import { IKeyPair } from "../types";
+import { getTestObject } from "./constants/objects";
 
 let cryptoKeyUtil: CryptoKeyUtil;
 let objectHasher: ObjectHasher;
