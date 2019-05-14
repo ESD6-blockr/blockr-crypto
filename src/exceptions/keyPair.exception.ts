@@ -5,5 +5,7 @@ export class KeyPairException extends Error {
         super(message);
 
         this.reason = reason;
+
+        Object.setPrototypeOf(this, KeyPairException.prototype);
     }
 }

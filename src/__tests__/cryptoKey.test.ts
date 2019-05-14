@@ -1,4 +1,5 @@
 import "reflect-metadata";
+
 import { CryptoKeyUtil } from "../cryptoKeyUtil";
 import { ObjectHasher } from "../objectHasher";
 import { IKeyPair } from "../types";
