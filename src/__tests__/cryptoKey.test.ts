@@ -1,8 +1,11 @@
 import "reflect-metadata";
+
 import { CryptoKeyUtil } from "../cryptoKeyUtil";
 import { ObjectHasher } from "../objectHasher";
 import { IKeyPair } from "../types";
 import { getTestObject } from "./constants/objects";
+
+const GENERATION_AMOUNT: number = 500;
 
 let cryptoKeyUtil: CryptoKeyUtil;
 let objectHasher: ObjectHasher;
@@ -22,9 +25,9 @@ describe("Generating key pair", () => {
     });
 
     it("Should be unqiue each time", () => {
-        const keyPairs = new Array<IKeyPair>(500);
+        const keyPairs = new Array<IKeyPair>(GENERATION_AMOUNT);
 
-        for (let i = 0; i < 500; i++) {
+        for (let i = 0; i < GENERATION_AMOUNT; i++) {
             keyPairs[i] = (cryptoKeyUtil.generateKeyPair());
             expect(keyPairs.find((keyPair) => keyPair.getPublic() === keyPairs[i].getPublic())).not.toBeNull();
             expect(keyPairs.find((keyPair) => keyPair.getPrivate() === keyPairs[i].getPrivate())).not.toBeNull();

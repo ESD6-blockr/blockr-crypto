@@ -1,7 +1,7 @@
 module.exports = {
     testEnvironment : "node",
     displayName: {
-        name: "blockr-logger",
+        name: "blockr-crypto",
         color: "blue"
     },
     transform: {

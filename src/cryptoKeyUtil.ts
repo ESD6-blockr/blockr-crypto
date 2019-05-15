@@ -1,7 +1,6 @@
 import { ec as EC } from "elliptic";
 import { injectable } from "inversify";
-import { KeyPairException } from "./exceptions";
-import { SignatureException } from "./exceptions/signature.exception";
+import { KeyPairException, SignatureException } from "./exceptions";
 import { IKeyPair } from "./types";
 
 @injectable()
