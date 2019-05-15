@@ -1,0 +1,10 @@
+.scannerwork/
+.vscode/
+coverage/
+logs/
+src/
+Jenkinsfile
+jest.config.js
+junit.xml
+tsconfig.json
+tslint.json
