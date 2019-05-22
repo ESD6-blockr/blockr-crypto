@@ -6,7 +6,7 @@ String repo = 'blockr-crypto'
 
 Map settings = [
     sonar_key: 'blockr-crypto',
-    skip_tests: false,
+    sonar_exclusions: '**/**/index.ts,**/__tests__/**/*',
     source_folder: 'src/',
     archive_folders: ['dist/']
 ]

@@ -19,13 +19,23 @@ export class CryptoKeyUtil {
     public generateKeyPair(): IKeyPair {
         const keyPair = this.ec.genKeyPair();
 
-        const validationResult = keyPair.validate();
+        return this.validateKeyPair(keyPair);
+    }
 
-        if (validationResult.result) {
-            return keyPair;
-        }
+    /**
+     * 
+     * @param publicKey 
+     * @param privateKey 
+     */
+    public verifyKeyPair(publicKey: string, privateKey: string): IKeyPair {
+        const keyPair = this.ec.keyPair({
+            priv: Buffer.from(privateKey, "hex"),
+            privEnc: "hex",
+            pub: Buffer.from(publicKey, "hex"),
+            pubEnc: "hex",
+        });
 
-        throw new KeyPairException("Key pair generation failed", validationResult.reason);
+        return this.validateKeyPair(keyPair);
     }
 
     /**
@@ -55,5 +65,15 @@ export class CryptoKeyUtil {
         }
         
         throw new SignatureException("Signature does not match hash");
+    }
+
+    private validateKeyPair(keyPair: IKeyPair): IKeyPair {
+        const validationResult = keyPair.validate();
+
+        if (validationResult.result) {
+            return keyPair;
+        }
+
+        throw new KeyPairException("Key pair verification failed", validationResult.reason);
     }
 }

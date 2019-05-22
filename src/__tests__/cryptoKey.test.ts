@@ -35,6 +35,26 @@ describe("Generating key pair", () => {
     });
 });
 
+describe("Generating key pair from seperate keys", () => {
+    it("Should succeed with valid public and pirvate key strings", () => {
+        const keyPair = cryptoKeyUtil.generateKeyPair();
+
+        const result = cryptoKeyUtil.verifyKeyPair(keyPair.getPublic(true, "hex") as string, keyPair.getPrivate("hex"));
+
+        expect(result).toBeDefined();
+    });
+
+    it("Should fail with invalid public and private key strings", () => {
+        try {
+            cryptoKeyUtil.verifyKeyPair("public-key", "private-key");
+            fail();
+        } catch (error) {
+            expect(error).toBeDefined();
+            expect(error.message).toContain("Unknown point format");
+        }
+    });
+});
+
 describe("Signing hash with key pair", () => {
     it("Should succeed with a valid key pair", async () => {
         const object = getTestObject(1);
@@ -71,6 +91,7 @@ describe("Verifying signature", () => {
         try {
             cryptoKeyUtil.verifySignature(secondKeyPair.getPublic().encode("hex", true) as string,
                 hash, signature);
+            fail();
         } catch (error) {
             expect(error.message).toBe("Signature does not match hash");
         }
