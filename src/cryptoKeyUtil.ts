@@ -23,9 +23,10 @@ export class CryptoKeyUtil {
     }
 
     /**
-     * 
+     * Verify if the key combinration is a valid keypair.
      * @param publicKey 
      * @param privateKey 
+     * @returns {IKeyPair} EC key pair.
      */
     public verifyKeyPair(publicKey: string, privateKey: string): IKeyPair {
         const keyPair = this.ec.keyPair({
