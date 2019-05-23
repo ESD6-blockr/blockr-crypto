@@ -1,6 +1,11 @@
 import { createHash } from "crypto";
 import { injectable } from "inversify";
 
+/* Hash algorythm */
+const HASH_ALGORITHM = "md5";
+/* Encoding */
+const ENCODING = "hex";
+
 @injectable()
 export class ObjectHasher {
     /**
@@ -11,7 +16,7 @@ export class ObjectHasher {
     public hashAsync<T>(object: T): Promise<string> {
         return new Promise((resolve, reject) => {
             try {
-                resolve(createHash("md5").update(JSON.stringify(object)).digest("hex"));
+                resolve(createHash(HASH_ALGORITHM).update(JSON.stringify(object)).digest(ENCODING));
             } catch (error) {
                 reject(error);
             }
