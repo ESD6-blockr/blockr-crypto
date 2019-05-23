@@ -4,7 +4,9 @@ import { CryptoKeyUtil } from "../cryptoKeyUtil";
 import { ObjectHasher } from "../objectHasher";
 import { IKeyPair } from "../types";
 import { getTestObject } from "./constants/objects";
+import { Timer } from "./utils";
 
+const KEY_ENC = "hex";
 const GENERATION_AMOUNT: number = 500;
 
 let cryptoKeyUtil: CryptoKeyUtil;
@@ -24,6 +26,14 @@ describe("Generating key pair", () => {
         expect(keyPair.getPrivate()).not.toBeNull();
     });
 
+    it("Should take less then five seconds", () => {
+        const timer = new Timer();
+
+        cryptoKeyUtil.generateKeyPair();
+
+        expect(timer.getSeconds()).toBeLessThan(5);
+    });
+
     it("Should be unqiue each time", () => {
         const keyPairs = new Array<IKeyPair>(GENERATION_AMOUNT);
 
@@ -31,6 +41,27 @@ describe("Generating key pair", () => {
             keyPairs[i] = (cryptoKeyUtil.generateKeyPair());
             expect(keyPairs.find((keyPair) => keyPair.getPublic() === keyPairs[i].getPublic())).not.toBeNull();
             expect(keyPairs.find((keyPair) => keyPair.getPrivate() === keyPairs[i].getPrivate())).not.toBeNull();
+        }
+    });
+});
+
+describe("Generating key pair from seperate keys", () => {
+    it("Should succeed with valid public and private key strings", () => {
+        const keyPair = cryptoKeyUtil.generateKeyPair();
+
+        const result = cryptoKeyUtil.verifyKeyPair(
+            keyPair.getPublic(true, KEY_ENC) as string, keyPair.getPrivate(KEY_ENC));
+
+        expect(result).toBeDefined();
+    });
+
+    it("Should fail with invalid public and private key strings", () => {
+        try {
+            cryptoKeyUtil.verifyKeyPair("public-key", "private-key");
+            fail();
+        } catch (error) {
+            expect(error).toBeDefined();
+            expect(error.message).toContain("Unknown point format");
         }
     });
 });
@@ -54,7 +85,7 @@ describe("Verifying signature", () => {
         const keyPair = cryptoKeyUtil.generateKeyPair();
 
         const signature = cryptoKeyUtil.createSignatureWithKeyPair(hash, keyPair);
-        const verifyResult = cryptoKeyUtil.verifySignature(keyPair.getPublic().encode("hex", true) as string,
+        const verifyResult = cryptoKeyUtil.verifySignature(keyPair.getPublic().encode(KEY_ENC, true) as string,
             hash, signature);
 
         expect(verifyResult).toBe(true);
@@ -69,8 +100,9 @@ describe("Verifying signature", () => {
         const signature = cryptoKeyUtil.createSignatureWithKeyPair(hash, firstKeyPair);
 
         try {
-            cryptoKeyUtil.verifySignature(secondKeyPair.getPublic().encode("hex", true) as string,
+            cryptoKeyUtil.verifySignature(secondKeyPair.getPublic().encode(KEY_ENC, true) as string,
                 hash, signature);
+            fail();
         } catch (error) {
             expect(error.message).toBe("Signature does not match hash");
         }

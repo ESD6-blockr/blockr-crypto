@@ -3,12 +3,17 @@ import { injectable } from "inversify";
 import { KeyPairException, SignatureException } from "./exceptions";
 import { IKeyPair } from "./types";
 
+/* Elliptic curve parameters */
+const EC_PARAMETERS = "secp256k1";
+/* Key pair encoding */
+const KEY_ENC = "hex";
+
 @injectable()
 export class CryptoKeyUtil {
     private readonly ec: EC;
 
     constructor() {
-        this.ec = new EC("secp256k1");
+        this.ec = new EC(EC_PARAMETERS);
     }
 
     /**
@@ -19,13 +24,24 @@ export class CryptoKeyUtil {
     public generateKeyPair(): IKeyPair {
         const keyPair = this.ec.genKeyPair();
 
-        const validationResult = keyPair.validate();
+        return this.validateKeyPair(keyPair);
+    }
 
-        if (validationResult.result) {
-            return keyPair;
-        }
+    /**
+     * Verify if the key combinration is a valid keypair.
+     * @param publicKey 
+     * @param privateKey 
+     * @returns {IKeyPair} EC key pair.
+     */
+    public verifyKeyPair(publicKey: string, privateKey: string): IKeyPair {
+        const keyPair = this.ec.keyPair({
+            priv: Buffer.from(privateKey, KEY_ENC),
+            privEnc: KEY_ENC,
+            pub: Buffer.from(publicKey, KEY_ENC),
+            pubEnc: KEY_ENC,
+        });
 
-        throw new KeyPairException("Key pair generation failed", validationResult.reason);
+        return this.validateKeyPair(keyPair);
     }
 
     /**
@@ -37,7 +53,7 @@ export class CryptoKeyUtil {
     public createSignatureWithKeyPair(hash: string, keyPair: IKeyPair): string {
         const signature = keyPair.sign(hash);
        
-        return signature.toDER("hex");
+        return signature.toDER(KEY_ENC);
     }
 
     /**
@@ -48,12 +64,22 @@ export class CryptoKeyUtil {
      * @returns {boolean} Verification result.
      */
     public verifySignature(publicKey: string, hash: string, signature: string): boolean {
-        const key = this.ec.keyFromPublic(publicKey, "hex");
+        const key = this.ec.keyFromPublic(publicKey, KEY_ENC);
         
         if (key.verify(hash, signature)) {
             return true;
         }
         
         throw new SignatureException("Signature does not match hash");
+    }
+
+    private validateKeyPair(keyPair: IKeyPair): IKeyPair {
+        const validationResult = keyPair.validate();
+
+        if (validationResult.result) {
+            return keyPair;
+        }
+
+        throw new KeyPairException("Key pair verification failed", validationResult.reason);
     }
 }
