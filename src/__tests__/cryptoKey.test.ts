@@ -46,7 +46,7 @@ describe("Generating key pair", () => {
 });
 
 describe("Generating key pair from seperate keys", () => {
-    it("Should succeed with valid public and pirvate key strings", () => {
+    it("Should succeed with valid public and private key strings", () => {
         const keyPair = cryptoKeyUtil.generateKeyPair();
 
         const result = cryptoKeyUtil.verifyKeyPair(
