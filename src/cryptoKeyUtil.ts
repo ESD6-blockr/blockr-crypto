@@ -1,3 +1,5 @@
+import "reflect-metadata";
+
 import { ec as EC } from "elliptic";
 import { injectable } from "inversify";
 import { KeyPairException, SignatureException } from "./exceptions";
