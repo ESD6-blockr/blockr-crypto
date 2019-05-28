@@ -1,3 +1,5 @@
+import "reflect-metadata";
+
 import { createHash } from "crypto";
 import { injectable } from "inversify";
 
