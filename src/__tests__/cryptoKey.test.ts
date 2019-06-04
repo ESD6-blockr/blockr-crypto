@@ -46,22 +46,41 @@ describe("Generating key pair", () => {
 });
 
 describe("Generating key pair from seperate keys", () => {
-    it("Should succeed with valid public and private key strings", () => {
+    it("Should succeed with valid public and private key strings", async () => {
         const keyPair = cryptoKeyUtil.generateKeyPair();
 
-        const result = cryptoKeyUtil.verifyKeyPair(
+        const result = await cryptoKeyUtil.verifyKeyPair(
             keyPair.getPublic(true, KEY_ENC) as string, keyPair.getPrivate(KEY_ENC));
 
         expect(result).toBeDefined();
     });
 
-    it("Should fail with invalid public and private key strings", () => {
+    it("Should fail with invalid public and private key strings", async () => {
         try {
-            cryptoKeyUtil.verifyKeyPair("public-key", "private-key");
+            const keyPair = cryptoKeyUtil.generateKeyPair();
+
+            await cryptoKeyUtil.verifyKeyPair(keyPair.getPublic(true, KEY_ENC) as string, "private-key");
             fail();
         } catch (error) {
             expect(error).toBeDefined();
-            expect(error.message).toContain("Unknown point format");
+            expect(error.message).toBe("Key pair verification failed");
+            expect(error.reason).toBe("Signature does not match hash");
+        }
+    });
+
+    it("Should fail with invalid generated public and private key strings", async () => {
+        try {
+            const firstKeyPair = cryptoKeyUtil.generateKeyPair();
+            const secondKeyPair = cryptoKeyUtil.generateKeyPair();
+
+            await cryptoKeyUtil.verifyKeyPair(firstKeyPair.getPublic(true, KEY_ENC) as string,
+                secondKeyPair.getPrivate(KEY_ENC));
+
+            fail();
+        } catch (error) {
+            expect(error).toBeDefined();
+            expect(error.message).toBe("Key pair verification failed");
+            expect(error.reason).toBe("Signature does not match hash");
         }
     });
 });

@@ -3,6 +3,7 @@ import "reflect-metadata";
 import { ec as EC } from "elliptic";
 import { injectable } from "inversify";
 import { KeyPairException, SignatureException } from "./exceptions";
+import { ObjectHasher } from "./objectHasher";
 import { IKeyPair } from "./types";
 
 /* Elliptic curve parameters */
@@ -13,9 +14,11 @@ const KEY_ENC = "hex";
 @injectable()
 export class CryptoKeyUtil {
     private readonly ec: EC;
+    private readonly hasher: ObjectHasher;
 
     constructor() {
         this.ec = new EC(EC_PARAMETERS);
+        this.hasher = new ObjectHasher();
     }
 
     /**
@@ -35,15 +38,26 @@ export class CryptoKeyUtil {
      * @param privateKey 
      * @returns {IKeyPair} EC key pair.
      */
-    public verifyKeyPair(publicKey: string, privateKey: string): IKeyPair {
-        const keyPair = this.ec.keyPair({
-            priv: Buffer.from(privateKey, KEY_ENC),
-            privEnc: KEY_ENC,
-            pub: Buffer.from(publicKey, KEY_ENC),
-            pubEnc: KEY_ENC,
-        });
+    public async verifyKeyPair(publicKey: string, privateKey: string): Promise<IKeyPair> {
+        try {
+            const keyPair = this.ec.keyPair({
+                priv: Buffer.from(privateKey, KEY_ENC),
+                privEnc: KEY_ENC,
+                pub: Buffer.from(publicKey, KEY_ENC),
+                pubEnc: KEY_ENC,
+            });
 
-        return this.validateKeyPair(keyPair);
+            this.validateKeyPair(keyPair);
+            
+            const hash = await this.hasher.hashAsync( { data: Math.random().toString(36) } );
+            const signature = await this.createSignatureWithKeyPair(hash, keyPair);
+
+            this.verifySignature(keyPair.getPublic(true, KEY_ENC) as string, hash, signature);
+            
+            return keyPair;
+        } catch (error) {
+            throw new KeyPairException("Key pair verification failed", error.message);
+        }
     }
 
     /**
